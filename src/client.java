@@ -11,7 +11,7 @@ import java.net.*;
         }
         static void Foo() throws IOException {
 
-            Socket client = new Socket(InetAddress.getLocalHost(),1024); //Initialize server socket here.
+            Socket client = new Socket("196.24.164.225",1024); //Initialize server socket here.
 
             String hostName = client.getInetAddress().getHostName();
 

@@ -22,7 +22,7 @@ public class client {
 
     public client(){
         try{
-            socked = new Socket("localhost", 59090);
+            socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }

@@ -1,4 +1,4 @@
-
+package com.company;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,7 +7,7 @@ import java.util.*;
 public class server extends Thread {
 
     private ServerSocket ss;
-    private String fname = "jeff.odg"; /// need to have this change depending on client side input
+    private String fname; /// need to have this change depending on client side input
     private File f;
 
     public server() {
@@ -32,14 +32,13 @@ public class server extends Thread {
 
     private void saveFile(Socket clientSock) throws IOException {
         DataInputStream dis = new DataInputStream(clientSock.getInputStream());
-        FileOutputStream fos = new FileOutputStream("testfile");
-
         //Scanner sc = new Scanner(new BufferedReader(new InputStreamReader(clientSock.getInputStream(),"UTF-8")));
         String tempPro = "";
         tempPro = dis.readUTF();
         //tempPro = sc.nextLine();
         System.out.println("File name and size:  "+tempPro);
         String[] tempArr = tempPro.split(",");
+        FileOutputStream fos = new FileOutputStream(tempArr[0]);
 
         File f = new File(tempArr[0]); // attain from client using UTF
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
@@ -59,6 +58,11 @@ public class server extends Thread {
         //fos.close();
         //dis.close();
     }
+
+    /*private void sendFile(Socket clientSock) throws IOException {
+        DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
+        FileInputStream fis = new FileInputStream;
+    }*/
 
     public static void main(String[] args) {
         server fs = new server();

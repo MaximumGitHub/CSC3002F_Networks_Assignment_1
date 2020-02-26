@@ -21,15 +21,23 @@ public class client {
     Scanner in;
 
     public client(){
-        try{
-            socked = new Socket("196.47.201.237", 59090);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+    //    try{
+    //        socked = new Socket("localhost",59090);
+        //    //       // socked = new Socket("196.47.201.237", 59090);
+        //    //    } catch (Exception e){
+        //    //        e.printStackTrace();
+        //    //    }
     }
 
 
     public void uploadFile(String file) throws IOException {
+
+        try{
+            //socked = new Socket("localhost",59090);
+            socked = new Socket("196.47.201.237", 59090);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         in = new Scanner(socked.getInputStream());
         System.out.println("Enter the filename you wish to upload:");
@@ -56,9 +64,30 @@ public class client {
             DoutputS.write(buffer);
         }
         System.out.println("File sent. Check Directory\n");
+        socked.close();
         //pw.flush();
         //FinputS.close();
-        //DoutputS.close();
+        DoutputS.flush();
+    }
+
+    public void downloadFile() throws IOException {
+
+        File file = null;
+        FileOutputStream fos = null;
+        DataOutputStream dos = null;
+        try{
+            //socked = new Socket("localhost",59090);
+            socked = new Socket("196.47.201.237", 59090);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        in = new Scanner(socked.getInputStream());
+        System.out.println("Enter the filename you wish to download:");
+        fname = sc.nextLine();
+        file = new File(fname);
+
+
+
     }
 
     public static void main (String[] args){

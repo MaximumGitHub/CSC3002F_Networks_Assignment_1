@@ -1,3 +1,4 @@
+package com.company;
 import java.io.*;
 import java.net.InetAddress;
 import java.sql.SQLOutput;
@@ -11,67 +12,71 @@ import java.net.Socket;
  */
 public class client {
 
-    public static void main(String[] args) throws IOException
-    {
+    private Socket socked;
+    //private static String FILE_NAME;
+    private static String fname;
+    private static boolean flag;
+    static Scanner sc  = new Scanner(System.in);
+    Scanner in;
 
-        boolean flag = false;
+    public client(){
+        try{
+            socked = new Socket("localhost", 59090);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-        Scanner sc  = new Scanner(System.in);
-        while(!flag)
-        {
-            System.out.println("Welcome to Jeff. Please enter 1 to upload a file and 2 to download a file. Enter 0 to quit.");
-            int input = sc.nextInt();
-            if(input == 1)
-            {
+    public void uploadFile(String file) throws IOException {
+        DataOutputStream output = new DataOutputStream(socked.getOutputStream());
+        FileInputStream input = new FileInputStream(fname);
 
+        in = new Scanner(socked.getInputStream());
+        System.out.println("Enter the filename you wish to upload:");
+        fname = sc.nextLine();
+
+
+        File f = new File(fname);
+        byte[] buffer = new byte[(int)f.length()]; // was 4096
+
+        while (input.read(buffer) > 0){
+            output.write(buffer);
+        }
+        System.out.println("File sent. Check Directory\n");
+        input.close();
+        //output.close();
+    }
+
+    public static void main (String[] args){
+
+        flag = true;
+        client c = new client();
+        while (flag){
+            System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nList Available Files [q]\nUpload: [u]\nDownload [d]\nQuit [q]");
+            String in = sc.nextLine();
+
+            switch(in){
+                case "l":
+                    flag = false;
+                    break;
+
+                case "u":
+                    try {
+                        c.uploadFile(fname);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "d":
+                    System.out.println("You've selected the download function, unfortunately, we have to code that part first :(\n");
+                    break;
+                case "q":
+                    flag = false;
+                    System.out.println("Thank you for using Jeff's Files!");
+                    break;
             }
-            else if(input == 2)
-            {
 
-            }
-            else
-            {
-                flag = false;
-            }
         }
-
-        var socket = new Socket(InetAddress.getLocalHost(), 59090);
-        var in = new Scanner(socket.getInputStream());
-        System.out.println("Server response: " + in.nextLine());
-        BufferedInputStream bufferedIS = null;
-
-        //Declaration with try catch for the input and output streams of the socket called socket.
-        DataOutputStream output = null;
-        try
-        {
-            output = new DataOutputStream(socket.getOutputStream());
-        }
-        catch (IOException e)
-        {
-            System.out.println(e);
-        }
-        DataInputStream input = null;
-        try
-        {
-            input = new DataInputStream(socket.getInputStream());
-        }
-        catch (IOException e)
-        {
-            System.out.println(e);
-        }
-
-        File file = new File("DISGOSTANG.jpg");
-        int count;
-        byte[] buffer = new byte[(int)file.length()]; // or 4096, or more
-
-        bufferedIS = new BufferedInputStream(input);
-        bufferedIS.read(buffer,0,buffer.length);
-
-        System.out.println("Sending File:");
-        output.write(buffer,0,buffer.length);
-        output.flush();
-
-
     }
 
 }

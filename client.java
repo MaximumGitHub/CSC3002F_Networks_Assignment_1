@@ -1,9 +1,11 @@
+
 import java.io.*;
 import java.net.InetAddress;
 import java.sql.SQLOutput;
 import java.util.Scanner;
 import java.lang.*;
 import java.net.Socket;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * A command line client for the date server. Requires the IP address of the
@@ -11,67 +13,147 @@ import java.net.Socket;
  */
 public class client {
 
-    public static void main(String[] args) throws IOException
-    {
+    private Socket socked;
+    //private static String FILE_NAME;
+    private static String fname;
+    private static boolean flag;
+    static Scanner sc  = new Scanner(System.in);
+    Scanner in;
 
-        boolean flag = false;
+    public client(){
+    //    try{
+    //        socked = new Socket("localhost",59090);
+        //    //       // socked = new Socket("196.47.201.237", 59090);
+        //    //    } catch (Exception e){
+        //    //        e.printStackTrace();
+        //    //    }
+    }
 
-        Scanner sc  = new Scanner(System.in);
-        while(!flag)
-        {
-            System.out.println("Welcome to Jeff. Please enter 1 to upload a file and 2 to download a file. Enter 0 to quit.");
-            int input = sc.nextInt();
-            if(input == 1)
-            {
 
+    public void uploadFile(String file) throws IOException {
+
+        try{
+            //socked = new Socket("localhost",59090);
+            socked = new Socket("196.47.201.237", 59090);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        in = new Scanner(socked.getInputStream());
+        System.out.println("Enter the filename you wish to upload:");
+        fname = sc.nextLine();
+        File f = new File(fname);
+
+        DataOutputStream DoutputS = new DataOutputStream(socked.getOutputStream());
+        FileInputStream FinputS = new FileInputStream(fname);
+
+        //building the protocol
+        long fileSize = 0;
+        fileSize = f.length();
+
+        String tempPro = "";
+        tempPro = fname + "," + fileSize +","+"u";
+
+        DoutputS.writeUTF(fname + "," + Long.toString(fileSize));//Sends the protocol
+        /*PrintWriter pw = new PrintWriter(
+                new BufferedWriter(new OutputStreamWriter(socked.getOutputStream(), "UTF-8")),true);
+        pw.write(tempPro);*/
+
+        byte[] buffer = new byte[(int)f.length()]; // was 4096
+
+        while (FinputS.read(buffer) > 0){
+            DoutputS.write(buffer);
+        }
+        System.out.println("File sent. Check Directory\n");
+        socked.close();
+        //pw.flush();
+        //FinputS.close();
+        DoutputS.flush();
+    }
+
+    public void downloadFile() throws IOException {
+
+
+        DataOutputStream dos = null;
+        DataInputStream dis = null;
+        try{
+            //socked = new Socket("localhost",59090);
+            socked = new Socket("196.47.201.237", 59090);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        in = new Scanner(socked.getInputStream());
+        System.out.println("Enter the filename you wish to download:");
+        fname = sc.nextLine();
+        System.out.println("Enter the password:");
+        String tempPass = sc.nextLine();
+        String tempPro = fname+","+tempPass+","+"d";
+
+        dos = new DataOutputStream(socked.getOutputStream());
+        dos.writeUTF(fname ); //sends through file name
+
+        String sfile = dis.readUTF();
+        String[] tempArr = sfile.split(",");
+        FileOutputStream fos = new FileOutputStream(tempArr[0]);
+
+        File f = new File(tempArr[0]); // attain from client using UTF
+        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+        //
+        //int filesize = 15123; // Send file size in separate message using UTF
+        //
+        int read = 0;
+        int totalRead = 0;
+        int remaining = Integer.parseInt(tempArr[1]);
+        while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
+            totalRead += read;
+            remaining -= read;
+            System.out.println("read " + totalRead + " bytes.");
+            fos.write(buffer, 0, read);
+        }
+
+
+
+
+
+
+
+    }
+
+    public static void main (String[] args){
+
+        flag = true;
+        client c = new client();
+        while (flag){
+            System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nList Available Files [q]\nUpload: [u]\nDownload [d]\nQuit [q]");
+            String in = sc.nextLine();
+
+            switch(in){
+                case "l":
+                    flag = false;
+                    break;
+
+                case "u":
+                    try {
+                        c.uploadFile(fname);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "d":
+                    try{
+                        c.downloadFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("You've selected the download function, unfortunately, we have to code that part first :(\n");
+                    break;
+                case "q":
+                    flag = false;
+                    System.out.println("Thank you for using Jeff's Files!");
+                    break;
             }
-            else if(input == 2)
-            {
 
-            }
-            else
-            {
-                flag = false;
-            }
         }
-
-        var socket = new Socket(InetAddress.getLocalHost(), 59090);
-        var in = new Scanner(socket.getInputStream());
-        System.out.println("Server response: " + in.nextLine());
-        BufferedInputStream bufferedIS = null;
-
-        //Declaration with try catch for the input and output streams of the socket called socket.
-        DataOutputStream output = null;
-        try
-        {
-            output = new DataOutputStream(socket.getOutputStream());
-        }
-        catch (IOException e)
-        {
-            System.out.println(e);
-        }
-        DataInputStream input = null;
-        try
-        {
-            input = new DataInputStream(socket.getInputStream());
-        }
-        catch (IOException e)
-        {
-            System.out.println(e);
-        }
-
-        File file = new File("DISGOSTANG.jpg");
-        int count;
-        byte[] buffer = new byte[(int)file.length()]; // or 4096, or more
-
-        bufferedIS = new BufferedInputStream(input);
-        bufferedIS.read(buffer,0,buffer.length);
-
-        System.out.println("Sending File:");
-        output.write(buffer,0,buffer.length);
-        output.flush();
-
-
     }
 
 }

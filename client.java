@@ -47,13 +47,14 @@ public class client {
         DataOutputStream DoutputS = new DataOutputStream(socked.getOutputStream());
         FileInputStream FinputS = new FileInputStream(fname);
 
+        //building the protocol
         long fileSize = 0;
         fileSize = f.length();
 
         String tempPro = "";
-        tempPro = fname + "," + fileSize;
+        tempPro = fname + "," + fileSize +","+"u";
 
-        DoutputS.writeUTF(fname + "," + Long.toString(fileSize));
+        DoutputS.writeUTF(fname + "," + Long.toString(fileSize));//Sends the protocol
         /*PrintWriter pw = new PrintWriter(
                 new BufferedWriter(new OutputStreamWriter(socked.getOutputStream(), "UTF-8")),true);
         pw.write(tempPro);*/
@@ -72,9 +73,9 @@ public class client {
 
     public void downloadFile() throws IOException {
 
-        File file = null;
-        FileOutputStream fos = null;
+
         DataOutputStream dos = null;
+        DataInputStream dis = null;
         try{
             //socked = new Socket("localhost",59090);
             socked = new Socket("196.47.201.237", 59090);
@@ -84,7 +85,35 @@ public class client {
         in = new Scanner(socked.getInputStream());
         System.out.println("Enter the filename you wish to download:");
         fname = sc.nextLine();
-        file = new File(fname);
+        System.out.println("Enter the password:");
+        String tempPass = sc.nextLine();
+        String tempPro = fname+","+tempPass+","+"d";
+
+        dos = new DataOutputStream(socked.getOutputStream());
+        dos.writeUTF(fname ); //sends through file name
+
+        String sfile = dis.readUTF();
+        String[] tempArr = sfile.split(",");
+        FileOutputStream fos = new FileOutputStream(tempArr[0]);
+
+        File f = new File(tempArr[0]); // attain from client using UTF
+        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+        //
+        //int filesize = 15123; // Send file size in separate message using UTF
+        //
+        int read = 0;
+        int totalRead = 0;
+        int remaining = Integer.parseInt(tempArr[1]);
+        while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
+            totalRead += read;
+            remaining -= read;
+            System.out.println("read " + totalRead + " bytes.");
+            fos.write(buffer, 0, read);
+        }
+
+
+
+
 
 
 
@@ -111,6 +140,11 @@ public class client {
                     }
                     break;
                 case "d":
+                    try{
+                        c.downloadFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     System.out.println("You've selected the download function, unfortunately, we have to code that part first :(\n");
                     break;
                 case "q":

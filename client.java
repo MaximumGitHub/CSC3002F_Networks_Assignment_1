@@ -59,11 +59,13 @@ public class client {
                 new BufferedWriter(new OutputStreamWriter(socked.getOutputStream(), "UTF-8")),true);
         pw.write(tempPro);*/
 
+        //Read the file into the input stream
         byte[] buffer = new byte[(int)f.length()]; // was 4096
-
         while (FinputS.read(buffer) > 0){
             DoutputS.write(buffer);
         }
+
+
         System.out.println("File sent. Check Directory\n");
         socked.close();
         //pw.flush();
@@ -91,23 +93,20 @@ public class client {
         dos = new DataOutputStream(socked.getOutputStream());
         dos.writeUTF(tempPro); //sends through file name
 
-        boolean flag = false;
-        while(!flag)
-        {
-            if(dis.available()==0)
-            {
-                flag = true;
-            }
-        }
+
+        dis = new DataInputStream(socked.getInputStream());
+        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+
+
+
         String sfile = dis.readUTF();
+        System.out.println("sfile: "+sfile);
         String[] tempArr = sfile.split(",");
         FileOutputStream fos = new FileOutputStream(tempArr[0]);
 
+        System.out.println("post fos");
         File f = new File(tempArr[0]); // attain from client using UTF
-        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
-        //
-        //int filesize = 15123; // Send file size in separate message using UTF
-        //
+
         int read = 0;
         int totalRead = 0;
         int remaining = Integer.parseInt(tempArr[1]);

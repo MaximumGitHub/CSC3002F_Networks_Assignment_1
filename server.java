@@ -134,8 +134,6 @@ public class server extends Thread {
         dos.flush();
         System.out.println("Sent protocol");
 
-        dos.writeUTF(tempfname + "," + fileSize);
-
         byte[] buffer = new byte[(int)f.length()]; // was 4096
         System.out.println("buffer created");
         while (dis.read(buffer) > 0){

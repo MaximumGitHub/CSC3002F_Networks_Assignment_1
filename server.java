@@ -2,10 +2,12 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 
 public class server extends Thread {
 
+    private String[][] docList;
     private ServerSocket ss;
     private String fname; /// need to have this change depending on client side input
     private File f;
@@ -15,6 +17,36 @@ public class server extends Thread {
             ss = new ServerSocket(59090);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void readDocList() throws Exception
+    {
+        File f = new File("docList.txt");
+        Scanner sc = new Scanner(f);
+        int i = 0;
+        //count number of lines for text file to assign array dimensions appropriately
+        BufferedReader reader = new BufferedReader(new FileReader("docList.txt"));
+        int lines = 0;
+        while (reader.readLine() != null) lines++;
+        reader.close();
+        //
+        docList = new String[lines][2];
+        while(sc.hasNextLine())
+        {
+            String[] tempArr = sc.nextLine().split(",");
+            //System.out.println(tempArr[0]);
+            docList[i][0] = tempArr[0];
+            docList[i][1] = tempArr[1];
+            System.out.println("Filename: " + docList[i][0] + " password: " + docList[i][1]);
+            i++;
+        }
+        //testing code to print out the array
+        // iterate through 2D array
+        for(int x = 0; x < docList.length; x++) {
+            for(int y = 0; y<docList[x].length; y++) {
+                System.out.println("Values at arr["+x+"]["+y+"] is "+docList[x][y]);
+            }
         }
     }
 
@@ -37,6 +69,7 @@ public class server extends Thread {
                 }
                 else if(tempArr[2].equals("d"))
                 {
+                    System.out.println("testDownload");
                     sendFile(clientSock, tempArr);
                 }
                 //Socket clientSock = ss.accept();
@@ -91,13 +124,13 @@ public class server extends Thread {
 
         System.out.println(tempPro);
 
-        dos.writeUTF(tempfname + "," + Long.toString(fileSize));
+        dos.writeUTF(tempfname + "," + fileSize);
         byte[] buffer = new byte[(int)f.length()]; // was 4096
 
         while (dis.read(buffer) > 0){
             dos.write(buffer);
         }
-        System.out.println("File sent. Check Directory\n");
+        System.out.println("File sent. Check Local Directory\n");
         clientSock.close();
     }
 
@@ -109,6 +142,12 @@ public class server extends Thread {
     public static void main(String[] args) {
         server fs = new server();
         fs.start();
+        try {
+            fs.readDocList();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

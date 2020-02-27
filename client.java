@@ -33,8 +33,8 @@ public class client {
     public void uploadFile(String file) throws IOException {
 
         try{
-            //socked = new Socket("localhost",59090);
-            socked = new Socket("196.47.201.237", 59090);
+            socked = new Socket("localhost",59090);
+            //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -51,10 +51,10 @@ public class client {
         long fileSize = 0;
         fileSize = f.length();
 
-        String tempPro = "";
+        String tempPro;
         tempPro = fname + "," + fileSize +","+"u";
 
-        DoutputS.writeUTF(fname + "," + Long.toString(fileSize));//Sends the protocol
+        DoutputS.writeUTF(tempPro);//Sends the protocol
         /*PrintWriter pw = new PrintWriter(
                 new BufferedWriter(new OutputStreamWriter(socked.getOutputStream(), "UTF-8")),true);
         pw.write(tempPro);*/
@@ -73,12 +73,11 @@ public class client {
 
     public void downloadFile() throws IOException {
 
-
         DataOutputStream dos = null;
         DataInputStream dis = null;
         try{
-            //socked = new Socket("localhost",59090);
-            socked = new Socket("196.47.201.237", 59090);
+            socked = new Socket("localhost",59090);
+            //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -90,8 +89,16 @@ public class client {
         String tempPro = fname+","+tempPass+","+"d";
 
         dos = new DataOutputStream(socked.getOutputStream());
-        dos.writeUTF(fname ); //sends through file name
+        dos.writeUTF(tempPro); //sends through file name
 
+        boolean flag = false;
+        while(!flag)
+        {
+            if(dis.available()==0)
+            {
+                flag = true;
+            }
+        }
         String sfile = dis.readUTF();
         String[] tempArr = sfile.split(",");
         FileOutputStream fos = new FileOutputStream(tempArr[0]);
@@ -110,13 +117,6 @@ public class client {
             System.out.println("read " + totalRead + " bytes.");
             fos.write(buffer, 0, read);
         }
-
-
-
-
-
-
-
     }
 
     public static void main (String[] args){

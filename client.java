@@ -1,4 +1,4 @@
-
+package src;
 import java.io.*;
 import java.net.InetAddress;
 import java.sql.SQLOutput;
@@ -21,8 +21,8 @@ public class client {
     Scanner in;
 
     public client(){
-    //    try{
-    //        socked = new Socket("localhost",59090);
+        //    try{
+        //        socked = new Socket("localhost",59090);
         //    //       // socked = new Socket("196.47.201.237", 59090);
         //    //    } catch (Exception e){
         //    //        e.printStackTrace();
@@ -33,8 +33,8 @@ public class client {
     public void uploadFile(String file) throws IOException {
 
         try{
-            //socked = new Socket("localhost",59090);
-            socked = new Socket("196.47.201.237", 59090);
+            socked = new Socket("localhost",59090);
+            //socked = new Socket("196.24.164.225", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -77,8 +77,8 @@ public class client {
         DataOutputStream dos = null;
         DataInputStream dis = null;
         try{
-            //socked = new Socket("localhost",59090);
-            socked = new Socket("196.47.201.237", 59090);
+            socked = new Socket("localhost",59090);
+            //socked = new Socket("196.24.164.225", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -89,15 +89,28 @@ public class client {
         String tempPass = sc.nextLine();
         String tempPro = fname+","+tempPass+","+"d";
 
-        dos = new DataOutputStream(socked.getOutputStream());
-        dos.writeUTF(fname ); //sends through file name
 
-        String sfile = dis.readUTF();
-        String[] tempArr = sfile.split(",");
+        dos = new DataOutputStream(socked.getOutputStream());
+        dos.writeUTF(tempPro ); //sends through file name
+
+        dis = new DataInputStream(socked.getInputStream());
+        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+        //while(dis.readFully(buffer)==false)
+        dis.readFully(buffer);
+        /*for (byte b:buffer) {
+
+            // convert byte to char
+            char c = (char) b;
+
+            // prints character
+            System.out.print(c);
+        }*/
+        String sfile =dis.readUTF();
+                String[] tempArr = sfile.split(",");
         FileOutputStream fos = new FileOutputStream(tempArr[0]);
 
         File f = new File(tempArr[0]); // attain from client using UTF
-        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+
         //
         //int filesize = 15123; // Send file size in separate message using UTF
         //

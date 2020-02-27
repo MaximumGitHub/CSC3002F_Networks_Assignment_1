@@ -1,4 +1,4 @@
-
+package src;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,6 +9,8 @@ public class server extends Thread {
     private ServerSocket ss;
     private String fname; /// need to have this change depending on client side input
     private File f;
+    DataInputStream dis;
+
 
     public server() {
         try {
@@ -23,9 +25,9 @@ public class server extends Thread {
         while (true) {
             try {
                 System.out.printf("test1:  ");
-                Socket clientSock = ss.accept();
+                Socket clientSock = ss.accept(); //getting error here
                 System.out.printf("test2:  ");
-                DataInputStream dis = new DataInputStream(clientSock.getInputStream());
+                dis = new DataInputStream(clientSock.getInputStream());
                 String tempPro = "";
                 tempPro = dis.readUTF();
                 //tempPro = sc.nextLine();
@@ -49,20 +51,13 @@ public class server extends Thread {
     }
 
     private void saveFile(Socket clientSock,String[] tempArr) throws IOException {
-        /*DataInputStream dis = new DataInputStream(clientSock.getInputStream());
-        String tempPro = "";
-        tempPro = dis.readUTF();
-        //tempPro = sc.nextLine();
-        System.out.println("File name and size:  "+tempPro);
-        String[] tempArr = tempPro.split(",");*/
+
         DataInputStream dis = new DataInputStream(clientSock.getInputStream());
         FileOutputStream fos = new FileOutputStream(tempArr[0]);
 
         File f = new File(tempArr[0]); // attain from client using UTF
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
-        //
-        //int filesize = 15123; // Send file size in separate message using UTF
-        //
+
         int read = 0;
         int totalRead = 0;
         int remaining = Integer.parseInt(tempArr[1]);
@@ -79,9 +74,10 @@ public class server extends Thread {
 
     private void sendFile(Socket clientSock, String[] tempArr) throws IOException {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
-        DataInputStream dis = new DataInputStream(clientSock.getInputStream());
+        //dis = new DataInputStream(clientSock.getInputStream());
         String tempfname;
         tempfname = dis.readUTF();
+        System.out.println("wowow");
         File f = new File(tempfname);
         long fileSize = 0;
         fileSize = f.length();

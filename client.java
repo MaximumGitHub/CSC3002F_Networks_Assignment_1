@@ -93,8 +93,11 @@ public class client {
         dos = new DataOutputStream(socked.getOutputStream());
         dos.writeUTF(tempPro); //sends through file name
 
+
         dis = new DataInputStream(socked.getInputStream());
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+
+
 
         String sfile = dis.readUTF();
         System.out.println("sfile: "+sfile);

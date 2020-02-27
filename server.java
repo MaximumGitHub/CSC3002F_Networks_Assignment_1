@@ -38,16 +38,20 @@ public class server extends Thread {
             //System.out.println(tempArr[0]);
             docList[i][0] = tempArr[0];
             docList[i][1] = tempArr[1];
-            //System.out.println("Filename: " + docList[i][0] + " password: " + docList[i][1]);
+
+            System.out.println("Filename: " + docList[i][0] + " password: " + docList[i][1]);
+
             i++;
         }
         //testing code to print out the array
         // iterate through 2D array
+
         /*for(int x = 0; x < docList.length; x++) {
             for(int y = 0; y<docList[x].length; y++) {
                 System.out.println("Values at arr["+x+"]["+y+"] is "+docList[x][y]);
             }
         }*/
+
     }
 
     public void run() {
@@ -129,13 +133,19 @@ public class server extends Thread {
         dos.writeUTF(tempPro);
         dos.flush();
         System.out.println("Sent protocol");
+
+        dos.writeUTF(tempfname + "," + fileSize);
+
         byte[] buffer = new byte[(int)f.length()]; // was 4096
         System.out.println("buffer created");
         while (dis.read(buffer) > 0){
             dos.write(buffer);
         }
+
         dos.close();
         dis.close();
+
+
         System.out.println("File sent. Check Local Directory\n");
         clientSock.close();
     }

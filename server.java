@@ -9,8 +9,6 @@ public class server extends Thread {
 
     private String[][] docList;
     private ServerSocket ss;
-    private String fname; /// need to have this change depending on client side input
-    private File f;
 
     public server() {
         try {
@@ -72,6 +70,10 @@ public class server extends Thread {
                     System.out.println("testDownload");
                     sendFile(clientSock, tempArr);
                 }
+                else if(tempArr[2].equals("v"));
+                {
+                    sendList(clientSock,tempArr);
+                }
                 //Socket clientSock = ss.accept();
                 //saveFile(clientSock);
 
@@ -103,14 +105,11 @@ public class server extends Thread {
             System.out.println("read " + totalRead + " bytes.");
             fos.write(buffer, 0, read);
         }
-
-        //fos.close();
-        //dis.close();
     }
 
     private void sendFile(Socket clientSock, String[] tempArr) throws IOException {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
-        DataInputStream dis = new DataInputStream(clientSock.getInputStream());
+        //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
 
         System.out.println("readUTF read 2");
         File f = new File(tempArr[0]);
@@ -136,10 +135,36 @@ public class server extends Thread {
         clientSock.close();
     }
 
-    /*private void sendFile(Socket clientSock) throws IOException {
+    public void sendList(Socket clientSock, String[] tempArr) throws IOException
+    {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
-        FileInputStream fis = new FileInputStream;
-    }*/
+        //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
+
+        System.out.println("readUTF read 2");
+        File f = new File("docList.txt");
+        FileInputStream FinputS = new FileInputStream("docList.txt");
+        long fileSize;
+        fileSize = f.length();
+
+        String tempPro = "";
+        tempPro = "docList.txt"+ "," + fileSize;
+
+        System.out.println("tempPro: "+tempPro);
+
+        dos.writeUTF(tempPro);
+        dos.flush();
+        System.out.println("Sent protocol");
+
+        byte[] buffer = new byte[(int)f.length()]; // was 4096
+        while (FinputS.read(buffer) > 0){
+            dos.write(buffer);
+        }
+        dos.close();
+        System.out.println("List sent. Check Local Directory\n");
+        clientSock.close();
+
+    }
+
 
     public static void main(String[] args) {
         server fs = new server();

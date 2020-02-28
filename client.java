@@ -55,9 +55,6 @@ public class client {
         tempPro = fname + "," + fileSize +","+"u";
 
         DoutputS.writeUTF(tempPro);//Sends the protocol
-        /*PrintWriter pw = new PrintWriter(
-                new BufferedWriter(new OutputStreamWriter(socked.getOutputStream(), "UTF-8")),true);
-        pw.write(tempPro);*/
 
         //Read the file into the input stream
         byte[] buffer = new byte[(int)f.length()]; // was 4096
@@ -96,7 +93,7 @@ public class client {
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
 
         String sfile = dis.readUTF();
-        System.out.println("sfile: "+sfile);
+        //System.out.println("sfile: "+sfile);
         String[] tempArr = sfile.split(",");
         FileOutputStream fos = new FileOutputStream(tempArr[0]);
 
@@ -114,12 +111,39 @@ public class client {
         }
     }
 
+    public void queryList()  throws IOException
+    {
+        DataOutputStream dos = null;
+        DataInputStream dis = null;
+        try{
+            socked = new Socket("localhost",59090);
+            //socked = new Socket("196.47.201.237", 59090);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        in = new Scanner(socked.getInputStream());
+        String tempPro = "0,0,v";
+
+        dos = new DataOutputStream(socked.getOutputStream());
+        dos.writeUTF(tempPro); //sends through file name
+
+        dis = new DataInputStream(socked.getInputStream());
+        byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
+
+        String sfile = dis.readUTF();
+        System.out.println("sfile: "+sfile);
+        String tempList;
+        tempList = dis.readUTF();
+        System.out.println(tempList);
+
+    }
+
     public static void main (String[] args){
 
         flag = true;
         client c = new client();
         while (flag){
-            System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nList Available Files [q]\nUpload: [u]\nDownload [d]\nQuit [q]");
+            System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nList Available Files [q]\nUpload: [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
             String in = sc.nextLine();
 
             switch(in){
@@ -140,15 +164,18 @@ public class client {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    System.out.println("You've selected the download function, unfortunately, we have to code that part first :(\n");
                     break;
+                case "v":
+                    try{
+                        c.queryList();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 case "q":
                     flag = false;
                     System.out.println("Thank you for using Jeff's Files!");
                     break;
             }
-
         }
     }
-
 }

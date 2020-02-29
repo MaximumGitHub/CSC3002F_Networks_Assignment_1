@@ -145,19 +145,6 @@ public class client {
             //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
-
-        System.out.println("post fos");
-        File f = new File(tempArr[0]); // attain from client using UTF
-
-        int read = 0;
-        int totalRead = 0;
-        int remaining = Integer.parseInt(tempArr[1]);
-        while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
-            totalRead += read;
-            remaining -= read;
-            System.out.println("read " + totalRead + " bytes.");
-            fos.write(buffer, 0, read);
-
         }
         in = new Scanner(socked.getInputStream());
         System.out.println("Enter the password:");

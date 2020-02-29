@@ -1,4 +1,4 @@
-
+package com.company;
 import java.io.*;
 import java.net.InetAddress;
 import java.sql.SQLOutput;
@@ -19,10 +19,12 @@ public class client {
     private static boolean flag;
     static Scanner sc  = new Scanner(System.in);
     Scanner in;
+    final String IP = "localhost";
+    //final String IP = "196.24.186.49";
 
     public client(){
-    //    try{
-    //        socked = new Socket("localhost",59090);
+        //    try{
+        //        socked = new Socket("localhost",59090);
         //    //       // socked = new Socket("196.47.201.237", 59090);
         //    //    } catch (Exception e){
         //    //        e.printStackTrace();
@@ -33,7 +35,7 @@ public class client {
     public void uploadFile(String file) throws IOException {
 
         try{
-            socked = new Socket("localhost",59090);
+            socked = new Socket(IP,59090);
             //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
@@ -74,7 +76,7 @@ public class client {
         DataOutputStream dos = null;
         DataInputStream dis = null;
         try{
-            socked = new Socket("localhost",59090);
+            socked = new Socket(IP,59090);
             //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
@@ -116,7 +118,7 @@ public class client {
         DataOutputStream dos = null;
         DataInputStream dis = null;
         try{
-            socked = new Socket("localhost",59090);
+            socked = new Socket(IP,59090);
             //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
@@ -131,10 +133,8 @@ public class client {
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
 
         String sfile = dis.readUTF();
-        System.out.println("sfile: "+sfile);
-        String tempList;
-        tempList = dis.readUTF();
-        System.out.println(tempList);
+        System.out.println("File Available for download:");
+        System.out.println(sfile);
 
     }
 
@@ -147,10 +147,6 @@ public class client {
             String in = sc.nextLine();
 
             switch(in){
-                case "l":
-                    flag = false;
-                    break;
-
                 case "u":
                     try {
                         c.uploadFile(fname);
@@ -163,6 +159,7 @@ public class client {
                         c.downloadFile();
                     } catch (IOException e) {
                         e.printStackTrace();
+                        //System.out.println("Error 404. File not Found.");
                     }
                     break;
                 case "v":
@@ -171,6 +168,7 @@ public class client {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    break;
                 case "q":
                     flag = false;
                     System.out.println("Thank you for using Jeff's Files!");

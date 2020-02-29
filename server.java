@@ -1,8 +1,9 @@
+package com.company;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class server extends Thread {
@@ -46,41 +47,6 @@ public class server extends Thread {
                 System.out.println("Values at arr["+x+"]["+y+"] is "+docList[x][y]);
             }
         }*/
-    }
-
-    public void run() {
-        System.out.println("Server is now Running...");
-        while (true) {
-            try {
-                //System.out.printf("test1:  ");
-                Socket clientSock = ss.accept();
-                //System.out.printf("test2:  ");
-                DataInputStream dis = new DataInputStream(clientSock.getInputStream());
-                String tempPro = "";
-                tempPro = dis.readUTF();
-                //tempPro = sc.nextLine();
-                //System.out.println("File name and size:  "+tempPro);
-                String[] tempArr = tempPro.split(",");
-                if(tempArr[2].equals("u"))
-                {
-                    saveFile(clientSock, tempArr);
-                }
-                else if(tempArr[2].equals("d"))
-                {
-                    System.out.println("testDownload");
-                    sendFile(clientSock, tempArr);
-                }
-                else if(tempArr[2].equals("v"));
-                {
-                    sendList(clientSock,tempArr);
-                }
-                //Socket clientSock = ss.accept();
-                //saveFile(clientSock);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void saveFile(Socket clientSock,String[] tempArr) throws IOException {
@@ -140,25 +106,29 @@ public class server extends Thread {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
         //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
 
-        System.out.println("readUTF read 2");
+        //System.out.println("readUTF read 2");
         File f = new File("docList.txt");
-        FileInputStream FinputS = new FileInputStream("docList.txt");
-        long fileSize;
-        fileSize = f.length();
 
-        String tempPro = "";
-        tempPro = "docList.txt"+ "," + fileSize;
-
-        System.out.println("tempPro: "+tempPro);
-
-        dos.writeUTF(tempPro);
-        dos.flush();
-        System.out.println("Sent protocol");
-
-        byte[] buffer = new byte[(int)f.length()]; // was 4096
-        while (FinputS.read(buffer) > 0){
-            dos.write(buffer);
+        BufferedReader reader = new BufferedReader(new FileReader("docList.txt"));
+        int lines = 0;
+        while (reader.readLine() != null) {
+            lines++;
+            String[] temp = new String[lines];
         }
+        reader.close();
+
+        String row;
+        String doc = "";
+        BufferedReader txtReader = new BufferedReader(new FileReader("docList.txt"));
+        while ((row = txtReader.readLine()) != null) {
+            String[] data = row.split(",");
+            doc += data[0] +"\n";
+        }
+        txtReader.close();
+
+        System.out.println(doc);
+        //System.out.println("just before writeUTF");
+        dos.writeUTF(doc);
         dos.close();
         System.out.println("List sent. Check Local Directory\n");
         clientSock.close();
@@ -174,6 +144,47 @@ public class server extends Thread {
         }
         catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public void run() {
+        System.out.println("Server is now Running...\n");
+        while (true) {
+            try {
+                //System.out.printf("test1:  ");
+                Socket clientSock = ss.accept();
+                //System.out.printf("test2:  ");
+                DataInputStream dis = new DataInputStream(clientSock.getInputStream());
+                String tempPro = "";
+                tempPro = dis.readUTF();
+                //tempPro = sc.nextLine();
+                //System.out.println("File name and size:  "+tempPro);
+                String[] tempArr = tempPro.split(",");
+                if(tempArr[2].equals("u"))
+                {
+                    saveFile(clientSock, tempArr);
+                }
+                else if(tempArr[2].equals("d"))
+                {
+                    System.out.println("testDownload");
+                    try{
+                        sendFile(clientSock, tempArr);
+                    }
+                    catch(Exception e){
+                        // write
+                    }
+
+                }
+                else if(tempArr[2].equals("v"));
+                {
+                    sendList(clientSock,tempArr);
+                }
+                //Socket clientSock = ss.accept();
+                //saveFile(clientSock);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

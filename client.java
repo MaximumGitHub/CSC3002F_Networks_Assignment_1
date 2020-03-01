@@ -1,4 +1,4 @@
-
+package src;
 import java.io.*;
 import java.net.InetAddress;
 import java.sql.SQLOutput;
@@ -20,8 +20,8 @@ public class client {
     private static boolean flag;
     static Scanner sc  = new Scanner(System.in);
     Scanner in;
-    final String IP = "localhost";
-    //final String IP = "196.24.186.49";
+    //final String IP = "localhost";
+    final String IP = "196.24.186.49";
 
     public client(){
         //    try{
@@ -71,7 +71,6 @@ public class client {
             DoutputS.write(buffer);
         }
 
-
         System.out.println("File sent. Check Directory\n");
         socked.close();
         //pw.flush();
@@ -103,13 +102,11 @@ public class client {
         dos = new DataOutputStream(socked.getOutputStream());
         dos.writeUTF(tempPro); //sends through file name
 
-
         dis = new DataInputStream(socked.getInputStream());
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
 
         String sfile = dis.readUTF();
         //System.out.println("sfile: "+sfile);
-
         String[] tempArr = sfile.split(",");
         if(tempArr[0].equals("incorrectPass")){
             System.out.println("The password is incorrect\n");
@@ -135,7 +132,6 @@ public class client {
         }
     }
 
-
     public void queryList()  throws IOException
     {
         DataOutputStream dos = null;
@@ -145,19 +141,6 @@ public class client {
             //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
-
-        System.out.println("post fos");
-        File f = new File(tempArr[0]); // attain from client using UTF
-
-        int read = 0;
-        int totalRead = 0;
-        int remaining = Integer.parseInt(tempArr[1]);
-        while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
-            totalRead += read;
-            remaining -= read;
-            System.out.println("read " + totalRead + " bytes.");
-            fos.write(buffer, 0, read);
-
         }
         in = new Scanner(socked.getInputStream());
         System.out.println("Enter the password:");

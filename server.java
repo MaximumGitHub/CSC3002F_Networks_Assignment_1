@@ -1,5 +1,3 @@
-package src;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,7 +36,6 @@ public class server extends Thread {
             docList[i][1] = tempArr[1];
             i++;
         }
-
     }
 
     private void saveFile(Socket clientSock,String[] tempArr) throws Exception {
@@ -73,7 +70,6 @@ public class server extends Thread {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
         //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
 
-
         File f = new File(tempArr[0]);
         try{
             FileInputStream FinputS = new FileInputStream(tempArr[0]);
@@ -81,31 +77,52 @@ public class server extends Thread {
             fileSize = f.length();
 
             String tempPro = "";
+            int tempInt = 0;
             tempPro = tempArr[0]+ "," + fileSize;
             String incorrectPass = "incorrectPass,"+0;
             String incorrectFile = "incorrectFile,"+0;
-            System.out.println(docList.length);
+            System.out.println("Items on list:"+docList.length);
             for(int x = 0; x < docList.length; x++)
             {
                 System.out.println("loop starts");
-                if(docList[x][1].equals(tempArr[1])&& docList[x][0].equals(tempArr[0])||docList[x][1].equals(" ")&& docList[x][0].equals(tempArr[0])) {
-                    dos.writeUTF(tempPro);
-                    dos.flush();
+                if(docList[x][1].equals(tempArr[1])&& docList[x][0].equals(tempArr[0])||docList[x][1].equals("")&& docList[x][0].equals(tempArr[0])) {
+                    tempInt = 1;
+                    //dos.writeUTF(tempPro);
+                    //dos.flush();
                     System.out.println("Sent protocol");
-
+                    break;
                 }
                 else if(docList[x][0].equals(tempArr[0])){
                     System.out.println("Incorrect password.");
-                    dos.writeUTF(incorrectPass);
-
+                    tempInt = 2;
+                    //dos.writeUTF(incorrectPass);
                 }
                 else {
+                    tempInt = 3;
                     System.out.println("file not exist");
-                    dos.writeUTF(incorrectFile);
+                    //dos.writeUTF(incorrectFile);
                 }
-
-
             }
+
+            switch (tempInt){
+                case 1:
+                {
+                    dos.writeUTF(tempPro);
+                    dos.flush();
+                    break;
+                }
+                case 2:
+                {
+                    dos.writeUTF(incorrectPass);
+                    break;
+                }
+                case 3:
+                {
+                    dos.writeUTF(incorrectFile);
+                    break;
+                }
+            }
+
 
             byte[] buffer = new byte[(int)f.length()]; // was 4096
             while (FinputS.read(buffer) > 0){
@@ -129,7 +146,7 @@ public class server extends Thread {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
         //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
 
-        //System.out.println("readUTF read 2");
+        //System.out.println("send list test 1");
         File f = new File("docList.txt");
 
         BufferedReader reader = new BufferedReader(new FileReader("docList.txt"));

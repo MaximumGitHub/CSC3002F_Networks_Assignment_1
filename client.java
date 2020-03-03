@@ -1,3 +1,4 @@
+package src;
 import javax.swing.*;
 import java.io.*;
 import java.util.Scanner;
@@ -16,9 +17,9 @@ public class client {
     private static boolean flag;
     static Scanner sc  = new Scanner(System.in);
     Scanner in;
-    //final String IP = "localhost";
+    final String IP = "localhost";
     //final String IP = "196.24.186.49";
-    final String IP = "196.24.161.155";
+    //final String IP = "196.24.184.223";
 
     /**
      * The uploadFile method sends the file the client wishes to upload to the server.
@@ -35,8 +36,6 @@ public class client {
         }
 
         in = new Scanner(socked.getInputStream());
-        //System.out.println("Enter the filename you wish to upload:");
-        //fname = sc.nextLine();
         fname = JOptionPane.showInputDialog("Enter the filename you wish to upload:");
         File f = new File(fname);
 
@@ -47,13 +46,11 @@ public class client {
         long fileSize = 0;
         fileSize = f.length();
 
-        //System.out.println("Enter password, if you wish to secure the file");
-        //if((password = sc.nextLine()).isEmpty()){
-        //    password = " ";
-        //}
         password = JOptionPane.showInputDialog("Enter the password for file you wish to upload:");
-        String tempPro;
-        tempPro = fname + "," + fileSize +","+"u"+","+password;
+        if(password.isEmpty()){
+            password = " ";
+        }
+        String tempPro = fname + "," + fileSize +","+"u"+","+password;
 
         DoutputS.writeUTF(tempPro);//Sends the protocol
 
@@ -64,7 +61,6 @@ public class client {
         }
 
         JOptionPane.showMessageDialog(null,"File sent. Check Directory");
-        //System.out.println("File sent. Check Directory\n");
         socked.close();
         //pw.flush();
         //FinputS.close();
@@ -85,15 +81,11 @@ public class client {
             e.printStackTrace();
         }
         in = new Scanner(socked.getInputStream());
-        //System.out.println("Enter the filename you wish to download:");
         fname = JOptionPane.showInputDialog("Enter the filename you wish to download:");
-        //fname = sc.nextLine();
-        //System.out.println("Enter the password:");
-
         String tempPass = JOptionPane.showInputDialog("Enter the password:");
-        //if((tempPass = sc.nextLine()).isEmpty()){
-        //    tempPass = " ";
-        //}
+        if(tempPass.length()==0){
+            tempPass = " ";
+        }
         String tempPro = fname+","+tempPass+","+"d";
 
         dos = new DataOutputStream(socked.getOutputStream());
@@ -106,11 +98,9 @@ public class client {
         String[] tempArr = sfile.split(",");
         if(tempArr[0].equals("incorrectPass")){
             JOptionPane.showMessageDialog(null,"The password was incorrect");
-            //System.out.println("The password is incorrect\n");
         }
         else if(tempArr[0].equals("incorrectFile")){
             JOptionPane.showMessageDialog(null,"Error 404: This file was not found");
-            //System.out.println("Error 404: This file was not found\n");
         }
         else {
             FileOutputStream fos = new FileOutputStream(tempArr[0]);
@@ -126,7 +116,6 @@ public class client {
                 fos.write(buffer, 0, read);
             }
             JOptionPane.showMessageDialog(null,"File has successfully downloaded.");
-            //System.out.println("File has successfully downloaded.");
         }
     }
 
@@ -144,12 +133,11 @@ public class client {
             e.printStackTrace();
         }
         in = new Scanner(socked.getInputStream());
-        //System.out.println("Enter the password:");
-        //String tempPass;
-        //if((tempPass = sc.nextLine()).isEmpty()){
-        //    tempPass = " ";
-        //}
+
         String tempPass = JOptionPane.showInputDialog("Enter the password:");
+        if(tempPass.isEmpty()){
+        tempPass = " ";
+        }
         String tempPro = "0,0,v,"+tempPass;
 
         dos = new DataOutputStream(socked.getOutputStream());
@@ -160,8 +148,6 @@ public class client {
 
         String sfile = dis.readUTF();
         JOptionPane.showMessageDialog(null,"Files Available for download:"+"\n"+sfile);
-        //System.out.println("Files Available for download:");
-        //System.out.println(sfile);
 
     }
 
@@ -175,8 +161,6 @@ public class client {
         flag = true;
         client c = new client();
         while (flag){
-            //System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
-            //String in = sc.nextLine();
             String in = JOptionPane.showInputDialog("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
 
             switch(in){

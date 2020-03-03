@@ -47,10 +47,11 @@ public class client {
         long fileSize = 0;
         fileSize = f.length();
 
-        System.out.println("Enter password, if you wish to secure the file");
-        if((password = sc.nextLine()).isEmpty()){
-            password = " ";
-        }
+        //System.out.println("Enter password, if you wish to secure the file");
+        //if((password = sc.nextLine()).isEmpty()){
+        //    password = " ";
+        //}
+        password = JOptionPane.showInputDialog("Enter the filename you wish to upload:");
         String tempPro;
         tempPro = fname + "," + fileSize +","+"u"+","+password;
 

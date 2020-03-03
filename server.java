@@ -1,4 +1,3 @@
-package src;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -45,7 +44,9 @@ public class server extends Thread {
         {
             String[] tempArr = sc.nextLine().split(",");
             docList[i][0] = tempArr[0];
+            //System.out.println("tempArr[0]: "+tempArr[0]);
             docList[i][1] = tempArr[1];
+            //System.out.println("tempArr[1]: "+tempArr[1]);
             i++;
         }
     }
@@ -111,12 +112,13 @@ public class server extends Thread {
                     System.out.println("Incorrect password.");
                     tempInt = 2;
                 }
-                else {
+                else if(tempInt!=2)
+                {
                     tempInt = 3;
                     System.out.println("File does not exist");
                 }
             }
-
+            System.out.println("Moving to switch statements");
             switch (tempInt){
                 case 1:
                 {
@@ -151,8 +153,6 @@ public class server extends Thread {
             String errMess = "incorrectFile,"+0;
             dos.writeUTF(errMess);
         }
-
-
     }
 
     /**
@@ -240,5 +240,4 @@ public class server extends Thread {
             }
         }
     }
-
 }

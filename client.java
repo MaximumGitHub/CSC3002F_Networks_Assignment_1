@@ -1,4 +1,4 @@
-package src;
+import javax.swing.*;
 import java.io.*;
 import java.util.Scanner;
 import java.lang.*;
@@ -16,8 +16,9 @@ public class client {
     private static boolean flag;
     static Scanner sc  = new Scanner(System.in);
     Scanner in;
-    final String IP = "localhost";
+    //final String IP = "localhost";
     //final String IP = "196.24.186.49";
+    final String IP = "196.24.161.155";
 
     /**
      * The uploadFile method sends the file the client wishes to upload to the server.
@@ -34,8 +35,9 @@ public class client {
         }
 
         in = new Scanner(socked.getInputStream());
-        System.out.println("Enter the filename you wish to upload:");
-        fname = sc.nextLine();
+        //System.out.println("Enter the filename you wish to upload:");
+        //fname = sc.nextLine();
+        fname = JOptionPane.showInputDialog("Enter the filename you wish to upload:");
         File f = new File(fname);
 
         DataOutputStream DoutputS = new DataOutputStream(socked.getOutputStream());
@@ -81,13 +83,15 @@ public class client {
             e.printStackTrace();
         }
         in = new Scanner(socked.getInputStream());
-        System.out.println("Enter the filename you wish to download:");
-        fname = sc.nextLine();
-        System.out.println("Enter the password:");
-        String tempPass;
-        if((tempPass = sc.nextLine()).isEmpty()){
-            tempPass = " ";
-        }
+        //System.out.println("Enter the filename you wish to download:");
+        fname = JOptionPane.showInputDialog("Enter the filename you wish to download:");
+        //fname = sc.nextLine();
+        //System.out.println("Enter the password:");
+
+        String tempPass = JOptionPane.showInputDialog("Enter the password:");
+        //if((tempPass = sc.nextLine()).isEmpty()){
+        //    tempPass = " ";
+        //}
         String tempPro = fname+","+tempPass+","+"d";
 
         dos = new DataOutputStream(socked.getOutputStream());
@@ -135,12 +139,12 @@ public class client {
             e.printStackTrace();
         }
         in = new Scanner(socked.getInputStream());
-        System.out.println("Enter the password:");
-        String tempPass;
-        if((tempPass = sc.nextLine()).isEmpty()){
-            tempPass = " ";
-        }
-
+        //System.out.println("Enter the password:");
+        //String tempPass;
+        //if((tempPass = sc.nextLine()).isEmpty()){
+        //    tempPass = " ";
+        //}
+        String tempPass = JOptionPane.showInputDialog("Enter the password:");
         String tempPro = "0,0,v,"+tempPass;
 
         dos = new DataOutputStream(socked.getOutputStream());
@@ -165,8 +169,9 @@ public class client {
         flag = true;
         client c = new client();
         while (flag){
-            System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
-            String in = sc.nextLine();
+            //System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
+            //String in = sc.nextLine();
+            String in = JOptionPane.showInputDialog("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
 
             switch(in){
                 case "u":

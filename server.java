@@ -1,22 +1,34 @@
+package src;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
+/**
+ *A server where multiple clients can connect. Acts as a shared database.
+ */
 
 public class server extends Thread {
 
     private String[][] docList;
     private ServerSocket ss;
-    private server server;
 
-    public server() {
+    /**
+     * The constructor creates the server socket using port 59090
+     */
+    private server() {
         try {
             ss = new ServerSocket(59090);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     *Read docList reads in the current files that are stored in the server, which are written in docList. It stores them in a 2D array.
+     * @throws Exception if server cannot find the docList, which in theory should never occur as the server will always have the docList
+     */
 
     private void readDocList() throws Exception
     {
@@ -38,6 +50,13 @@ public class server extends Thread {
         }
     }
 
+    /**
+     *The saveFile method takes in the file that the client wishes to save and stores it in the docList and in files.
+     * @param clientSock takes in the client socket
+     * @param tempArr is the list of protocols
+     * @throws Exception handles the data output stream, ensuring that it has received the client socket and writes to it.
+     */
+
     private void saveFile(Socket clientSock,String[] tempArr) throws Exception {
         DataInputStream dis = new DataInputStream(clientSock.getInputStream());
         FileOutputStream fos = new FileOutputStream(tempArr[0]);
@@ -51,26 +70,25 @@ public class server extends Thread {
         while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
             totalRead += read;
             remaining -= read;
-            System.out.println("read " + totalRead + " bytes.");
             fos.write(buffer, 0, read);
         }
-        //server.readDocList();
-        //System.out.println("the thing"+docList[0][0]);
         FileWriter fr = new FileWriter("docList.txt", true);
         String tempDoc;
         tempDoc = tempArr[0] + "," + tempArr[3];
-        //System.out.println("tempDoc: " + tempDoc);
         fr.write(tempDoc + "\n");
         fr.close();
-
-
     }
 
+    /**
+     * The sendFile method takes in the name of the file and password of which the client wishes to download. It reads the docList to ensure the file is there and checks to see if the client has the correct password in order to download the file.
+     * @param clientSock takes in the client socket
+     * @param tempArr is the list of protocols
+     * @throws IOException handles the data output stream, ensuring that it has received the client socket and writes to it.
+     */
     private void sendFile(Socket clientSock, String[] tempArr) throws IOException {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
-        //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
-
         File f = new File(tempArr[0]);
+
         try{
             FileInputStream FinputS = new FileInputStream(tempArr[0]);
             long fileSize;
@@ -81,26 +99,21 @@ public class server extends Thread {
             tempPro = tempArr[0]+ "," + fileSize;
             String incorrectPass = "incorrectPass,"+0;
             String incorrectFile = "incorrectFile,"+0;
-            System.out.println("Items on list:"+docList.length);
             for(int x = 0; x < docList.length; x++)
             {
                 System.out.println("loop starts");
                 if(docList[x][1].equals(tempArr[1])&& docList[x][0].equals(tempArr[0])||docList[x][1].equals("")&& docList[x][0].equals(tempArr[0])) {
                     tempInt = 1;
-                    //dos.writeUTF(tempPro);
-                    //dos.flush();
                     System.out.println("Sent protocol");
                     break;
                 }
                 else if(docList[x][0].equals(tempArr[0])){
                     System.out.println("Incorrect password.");
                     tempInt = 2;
-                    //dos.writeUTF(incorrectPass);
                 }
                 else {
                     tempInt = 3;
-                    System.out.println("file not exist");
-                    //dos.writeUTF(incorrectFile);
+                    System.out.println("File does not exist");
                 }
             }
 
@@ -114,17 +127,18 @@ public class server extends Thread {
                 case 2:
                 {
                     dos.writeUTF(incorrectPass);
+                    dos.flush();
                     break;
                 }
                 case 3:
                 {
                     dos.writeUTF(incorrectFile);
+                    dos.flush();
                     break;
                 }
             }
 
-
-            byte[] buffer = new byte[(int)f.length()]; // was 4096
+            byte[] buffer = new byte[(int)f.length()];
             while (FinputS.read(buffer) > 0){
                 dos.write(buffer);
             }
@@ -141,12 +155,15 @@ public class server extends Thread {
 
     }
 
-    public void sendList(Socket clientSock, String[] tempArr) throws IOException
+    /**
+     * This method sends the list of files that are stored and of which the client can see based on their level of access.
+     * @param clientSock takes in the client socket.
+     * @param tempArr is the list of protocols.
+     * @throws IOException handles the data output stream, ensuring that it has received the client socket and writes to it.
+     */
+    private void sendList(Socket clientSock, String[] tempArr) throws IOException
     {
         DataOutputStream dos = new DataOutputStream(clientSock.getOutputStream());
-        //DataInputStream dis = new DataInputStream(clientSock.getInputStream());
-
-        //System.out.println("send list test 1");
         File f = new File("docList.txt");
 
         BufferedReader reader = new BufferedReader(new FileReader("docList.txt"));
@@ -166,9 +183,7 @@ public class server extends Thread {
             {doc += data[0] +"\n";}
         }
         txtReader.close();
-
         System.out.println(doc);
-        //System.out.println("just before writeUTF");
         dos.writeUTF(doc);
         dos.close();
         System.out.println("List sent. Check Local Directory\n");
@@ -176,6 +191,10 @@ public class server extends Thread {
 
     }
 
+    /**
+     * The main method starts the program.
+     * @param args does not take in anything.
+     */
 
     public static void main(String[] args) {
         server fs = new server();
@@ -188,6 +207,9 @@ public class server extends Thread {
         }
     }
 
+    /**
+     * The run method runs in parallel and calls the various methods based on what action client wishes to perform.
+     */
     public void run() {
         System.out.println("Server is now Running...\n");
         while (true) {
@@ -196,8 +218,6 @@ public class server extends Thread {
                 DataInputStream dis = new DataInputStream(clientSock.getInputStream());
                 String tempPro = "";
                 tempPro = dis.readUTF();
-                //tempPro = sc.nextLine();
-                //System.out.println("File name and size:  "+tempPro);
                 String[] tempArr = tempPro.split(",");
                 switch(tempArr[2]){
                     case "u":

@@ -1,11 +1,8 @@
-package src;
+import javax.swing.*;
 import java.io.*;
-import java.net.InetAddress;
-import java.sql.SQLOutput;
 import java.util.Scanner;
 import java.lang.*;
 import java.net.Socket;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * A command line client for the date server. Requires the IP address of the
@@ -14,26 +11,21 @@ import java.util.concurrent.ForkJoinPool;
 public class client {
 
     private Socket socked;
-    //private static String FILE_NAME;
     private static String fname;
     private static String password;
     private static boolean flag;
     static Scanner sc  = new Scanner(System.in);
     Scanner in;
     //final String IP = "localhost";
-    final String IP = "196.24.186.49";
+    //final String IP = "196.24.186.49";
+    final String IP = "196.24.161.155";
 
-    public client(){
-        //    try{
-        //        socked = new Socket("localhost",59090);
-        //    //       // socked = new Socket("196.47.201.237", 59090);
-        //    //    } catch (Exception e){
-        //    //        e.printStackTrace();
-        //    //    }
-    }
-
-
-    public void uploadFile(String file) throws IOException {
+    /**
+     * The uploadFile method sends the file the client wishes to upload to the server.
+     * @param file is the name of the file the client wishe to upload.
+     * @throws IOException if client cannot connect to the server IP.
+     */
+    private void uploadFile(String file) throws IOException {
 
         try{
             socked = new Socket(IP,59090);
@@ -43,9 +35,9 @@ public class client {
         }
 
         in = new Scanner(socked.getInputStream());
-        System.out.println("Enter the filename you wish to upload:");
-        fname = sc.nextLine();
-        System.out.println("read in file name");
+        //System.out.println("Enter the filename you wish to upload:");
+        //fname = sc.nextLine();
+        fname = JOptionPane.showInputDialog("Enter the filename you wish to upload:");
         File f = new File(fname);
 
         DataOutputStream DoutputS = new DataOutputStream(socked.getOutputStream());
@@ -59,14 +51,13 @@ public class client {
         if((password = sc.nextLine()).isEmpty()){
             password = " ";
         }
-        System.out.println("password is: " +password);
         String tempPro;
         tempPro = fname + "," + fileSize +","+"u"+","+password;
 
         DoutputS.writeUTF(tempPro);//Sends the protocol
 
         //Read the file into the input stream
-        byte[] buffer = new byte[(int)f.length()]; // was 4096
+        byte[] buffer = new byte[(int)f.length()];
         while (FinputS.read(buffer) > 0){
             DoutputS.write(buffer);
         }
@@ -78,26 +69,30 @@ public class client {
         DoutputS.flush();
     }
 
-    public void downloadFile() throws IOException {
+    /**
+     * The downloadFile method send the server the name of the file and password the client wishes to download.
+     * @throws IOException if client cannot connect to the server IP.
+     */
+    private void downloadFile() throws IOException {
 
         DataOutputStream dos = null;
         DataInputStream dis = null;
         try{
             socked = new Socket(IP,59090);
-            //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }
         in = new Scanner(socked.getInputStream());
-        System.out.println("Enter the filename you wish to download:");
-        fname = sc.nextLine();
-        System.out.println("Enter the password:");
-        String tempPass;
-        if((tempPass = sc.nextLine()).isEmpty()){
-            tempPass = " ";
-        }
+        //System.out.println("Enter the filename you wish to download:");
+        fname = JOptionPane.showInputDialog("Enter the filename you wish to download:");
+        //fname = sc.nextLine();
+        //System.out.println("Enter the password:");
+
+        String tempPass = JOptionPane.showInputDialog("Enter the password:");
+        //if((tempPass = sc.nextLine()).isEmpty()){
+        //    tempPass = " ";
+        //}
         String tempPro = fname+","+tempPass+","+"d";
-        System.out.println(tempPass);
 
         dos = new DataOutputStream(socked.getOutputStream());
         dos.writeUTF(tempPro); //sends through file name
@@ -106,7 +101,6 @@ public class client {
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
 
         String sfile = dis.readUTF();
-        //System.out.println("sfile: "+sfile);
         String[] tempArr = sfile.split(",");
         if(tempArr[0].equals("incorrectPass")){
             System.out.println("The password is incorrect\n");
@@ -117,7 +111,6 @@ public class client {
         else {
             FileOutputStream fos = new FileOutputStream(tempArr[0]);
 
-            System.out.println("post fos");
             File f = new File(tempArr[0]); // attain from client using UTF
 
             int read = 0;
@@ -126,29 +119,32 @@ public class client {
             while ((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
                 totalRead += read;
                 remaining -= read;
-                System.out.println("read " + totalRead + " bytes.");
                 fos.write(buffer, 0, read);
             }
+            System.out.println("File has successfully downloaded.");
         }
     }
 
-    public void queryList()  throws IOException
+    /**
+     * The queryList method requests a list of files available to download from the server.
+     * @throws IOException if client cannot connect to the server IP.
+     */
+    private void queryList()  throws IOException
     {
         DataOutputStream dos = null;
         DataInputStream dis = null;
         try{
             socked = new Socket(IP,59090);
-            //socked = new Socket("196.47.201.237", 59090);
         } catch (Exception e){
             e.printStackTrace();
         }
         in = new Scanner(socked.getInputStream());
-        System.out.println("Enter the password:");
-        String tempPass;
-        if((tempPass = sc.nextLine()).isEmpty()){
-            tempPass = " ";
-        }
-
+        //System.out.println("Enter the password:");
+        //String tempPass;
+        //if((tempPass = sc.nextLine()).isEmpty()){
+        //    tempPass = " ";
+        //}
+        String tempPass = JOptionPane.showInputDialog("Enter the password:");
         String tempPro = "0,0,v,"+tempPass;
 
         dos = new DataOutputStream(socked.getOutputStream());
@@ -158,18 +154,24 @@ public class client {
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
 
         String sfile = dis.readUTF();
-        System.out.println("File Available for download:");
+        System.out.println("Files Available for download:");
         System.out.println(sfile);
 
     }
+
+    /**
+     * The main method runs the client program and receives prompts from the user, who will indicate which action they wish to perform.
+     * @param args takes in the action that the client requests.
+     */
 
     public static void main (String[] args){
 
         flag = true;
         client c = new client();
         while (flag){
-            System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nList Available Files [q]\nUpload: [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
-            String in = sc.nextLine();
+            //System.out.println("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
+            //String in = sc.nextLine();
+            String in = JOptionPane.showInputDialog("Welcome to Jeff's Files. Choose an appropriate option:\nUpload [u]\nDownload [d]\nView list of Files [v]\nQuit [q]");
 
             switch(in){
                 case "u":

@@ -1,4 +1,3 @@
-package src;
 import javax.swing.*;
 import java.io.*;
 import java.util.Scanner;
@@ -136,7 +135,7 @@ public class client {
 
         String tempPass = JOptionPane.showInputDialog("Enter the password:");
         if(tempPass.isEmpty()){
-        tempPass = " ";
+            tempPass = " ";
         }
         String tempPro = "0,0,v,"+tempPass;
 
@@ -188,7 +187,8 @@ public class client {
                     break;
                 case "q":
                     flag = false;
-                    System.out.println("Thank you for using Jeff's Files!");
+                    JOptionPane.showMessageDialog(null,"Thank you for using Jeff's files.");
+                    //System.out.println("Thank you for using Jeff's Files!");
                     break;
             }
         }

@@ -51,7 +51,7 @@ public class client {
         //if((password = sc.nextLine()).isEmpty()){
         //    password = " ";
         //}
-        password = JOptionPane.showInputDialog("Enter the filename you wish to upload:");
+        password = JOptionPane.showInputDialog("Enter the password for file you wish to upload:");
         String tempPro;
         tempPro = fname + "," + fileSize +","+"u"+","+password;
 
@@ -63,7 +63,8 @@ public class client {
             DoutputS.write(buffer);
         }
 
-        System.out.println("File sent. Check Directory\n");
+        JOptionPane.showMessageDialog(null,"File sent. Check Directory");
+        //System.out.println("File sent. Check Directory\n");
         socked.close();
         //pw.flush();
         //FinputS.close();
@@ -104,10 +105,12 @@ public class client {
         String sfile = dis.readUTF();
         String[] tempArr = sfile.split(",");
         if(tempArr[0].equals("incorrectPass")){
-            System.out.println("The password is incorrect\n");
+            JOptionPane.showMessageDialog(null,"The password was incorrect");
+            //System.out.println("The password is incorrect\n");
         }
         else if(tempArr[0].equals("incorrectFile")){
-            System.out.println("Error 404: This file was not found\n");
+            JOptionPane.showMessageDialog(null,"Error 404: This file was not found");
+            //System.out.println("Error 404: This file was not found\n");
         }
         else {
             FileOutputStream fos = new FileOutputStream(tempArr[0]);
@@ -122,7 +125,8 @@ public class client {
                 remaining -= read;
                 fos.write(buffer, 0, read);
             }
-            System.out.println("File has successfully downloaded.");
+            JOptionPane.showMessageDialog(null,"File has successfully downloaded.");
+            //System.out.println("File has successfully downloaded.");
         }
     }
 
@@ -155,8 +159,9 @@ public class client {
         byte[] buffer = new byte[4096]; // need to send number of bytes from client via UTF
 
         String sfile = dis.readUTF();
-        System.out.println("Files Available for download:");
-        System.out.println(sfile);
+        JOptionPane.showMessageDialog(null,"Files Available for download:"+"\n"+sfile);
+        //System.out.println("Files Available for download:");
+        //System.out.println(sfile);
 
     }
 
